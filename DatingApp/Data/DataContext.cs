@@ -1,5 +1,7 @@
-﻿using DatingApp.Models;
+﻿using System.Reflection.Emit;
+using DatingApp.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DatingApp.Data
 {
@@ -17,6 +19,18 @@ namespace DatingApp.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            var dateOnlyConverter = new ValueConverter<DateOnly, DateTime>(
+    dateOnly => new DateTime(dateOnly.Year, dateOnly.Month, dateOnly.Day),
+    dateTime => DateOnly.FromDateTime(dateTime));
+
+            builder.Entity<AppUser>()
+                .Property(e => e.DateOfBirth)
+                .HasConversion(dateOnlyConverter);
+
+
+
+
             base.OnModelCreating(builder);
 
             builder.Entity<UserLike>()
